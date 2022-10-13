@@ -93,6 +93,25 @@ function buildDropDown() {
   let ddul = document.createElement("ul");
   ddul.classList.add("dropdown-menu");
 
+  ///////////
+  // this gets <li><a class="dropdown-item" onclick="getEvents()"></a></li>
+  // from the template
+  let ddItemNodeAll = document.importNode(template.content, true);
+
+  let cityName = "All";
+
+  // this pulls the <a> tag out of ddItemNode,
+  // <a class="dropdown-item" onclick="getEvents()"></a>
+  let ddItemAll = ddItemNodeAll.querySelector("a");
+
+  // set the innerHTML or textContent to a city
+  // can also use ddItem.innerHTML = cityName;
+  ddItemAll.textContent = cityName;
+  ddItemAll.setAttribute("data-string", cityName);
+
+  // add item to <ul> tag
+  ddul.appendChild(ddItemNodeAll);
+
   for (let i = 0; i < distinctEvents.length; i++) {
     // this gets <li><a class="dropdown-item" onclick="getEvents()"></a></li>
     // from the template
@@ -114,4 +133,88 @@ function buildDropDown() {
   }
 
   eventDD.appendChild(ddul);
+}
+
+function getEvents(element) {
+  let city = element.getAttribute("data-string");
+
+  let curEvents = events;
+
+  let statsHeader = document.getElementById("statsHeader");
+  statsHeader.innerHTML = `Stats for ${city} Events`;
+
+  //display stats for all, or the selected city
+  let filteredEvents = curEvents;
+  if (city != "All") {
+    // filter array by city name
+    filteredEvents = curEvents.filter(function (item) {
+      if (item.city == city) {
+        return item;
+      }
+    });
+  }
+
+  displayStats(filteredEvents);
+}
+
+function displayStats(events) {
+  let total = 0;
+  let most = 0;
+  let least = -1;
+
+  total = totalAttendance(events);
+  document.getElementById("total").innerHTML = total.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  document.getElementById("average").innerHTML = (
+    total / events.length
+  ).toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  most = mostAttendance(events);
+  document.getElementById("most").innerHTML = most.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  least = leastAttendance(events);
+  document.getElementById("least").innerHTML = least.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
+
+function totalAttendance(events) {
+  let length = events.length;
+  let totalAttendance = 0;
+  for (let i = 0; i < length; i++) {
+    totalAttendance += events[i].attendance;
+  }
+  return totalAttendance;
+}
+
+function mostAttendance(events) {
+  let length = events.length;
+  let most = 0;
+  for (let i = 0; i < length; i++) {
+    if (events[i].attendance > most) {
+      most = events[i].attendance;
+    }
+  }
+  return most;
+}
+
+function leastAttendance(events) {
+  let length = events.length;
+  let least = events[0].attendance;
+  for (let i = 0; i < length; i++) {
+    if (events[i].attendance < least) {
+      least = events[i].attendance;
+    }
+  }
+  return least;
 }
