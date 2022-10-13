@@ -87,4 +87,31 @@ function buildDropDown() {
 
   // A concise way of doing the same thing:
   // let distinctEvents = [...new Set(curEvents.map((event) => event.city))];
+
+  // create an unordered list element in a variable and add a class
+  // ex. <ul class="dropdown-menu"></ul>
+  let ddul = document.createElement("ul");
+  ddul.classList.add("dropdown-menu");
+
+  for (let i = 0; i < distinctEvents.length; i++) {
+    // this gets <li><a class="dropdown-item" onclick="getEvents()"></a></li>
+    // from the template
+    let ddItemNode = document.importNode(template.content, true);
+
+    let cityName = distinctEvents[i];
+
+    // this pulls the <a> tag out of ddItemNode,
+    // <a class="dropdown-item" onclick="getEvents()"></a>
+    let ddItem = ddItemNode.querySelector("a");
+
+    // set the innerHTML or textContent to a city
+    // can also use ddItem.innerHTML = cityName;
+    ddItem.textContent = cityName;
+    ddItem.setAttribute("data-string", cityName);
+
+    // add item to <ul> tag
+    ddul.appendChild(ddItemNode);
+  }
+
+  eventDD.appendChild(ddul);
 }
