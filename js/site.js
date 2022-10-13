@@ -93,7 +93,7 @@ function buildDropDown() {
   let ddul = document.createElement("ul");
   ddul.classList.add("dropdown-menu");
 
-  ///////////
+  ////// All Items case //////
   // this gets <li><a class="dropdown-item" onclick="getEvents()"></a></li>
   // from the template
   let ddItemNodeAll = document.importNode(template.content, true);
@@ -111,6 +111,8 @@ function buildDropDown() {
 
   // add item to <ul> tag
   ddul.appendChild(ddItemNodeAll);
+  //
+  /////
 
   for (let i = 0; i < distinctEvents.length; i++) {
     // this gets <li><a class="dropdown-item" onclick="getEvents()"></a></li>
@@ -133,6 +135,7 @@ function buildDropDown() {
   }
 
   eventDD.appendChild(ddul);
+  displayStats(curEvents);
 }
 
 function getEvents(element) {
