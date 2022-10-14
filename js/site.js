@@ -263,3 +263,39 @@ function displayEventData() {
     eventBody.appendChild(eventRow);
   }
 }
+
+// saves event data to local storage
+function saveEventData() {
+  let curEvents = getEventData();
+  /* Object Example
+  {
+    event: "ComicCon",
+    city: "New York",
+    state: "New York",
+    attendance: 240000,
+    date: "06/01/2017",
+  },
+  */
+  let newEventObj = {};
+  newEventObj["event"] = document.getElementById("newEventName").value;
+  newEventObj["city"] = document.getElementById("newEventCity").value;
+  // for state
+  let stateSel = document.getElementById("newEventState");
+  newEventObj["state"] = stateSel.options[stateSel.selectedIndex].text;
+
+  newEventObj["attendance"] = parseInt(
+    document.getElementById("newEventAttendance").value,
+    10
+  );
+
+  // for date
+  let eventDate = document.getElementById("newEventDate").value;
+  let eventDate2 = `${eventDate} 00:00`;
+  newEventObj["date"] = new Date(eventDate2).toLocaleDateString();
+
+  curEvents.push(newEventObj);
+
+  // store curEvents to eventData local storage
+  localStorage.setItem("eventData", JSON.stringify(curEvents));
+  buildDropDown();
+}
