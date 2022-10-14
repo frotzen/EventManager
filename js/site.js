@@ -65,6 +65,7 @@ const events = [
   },
 ];
 
+// entry point in <body onload="buildDropDown()">
 function buildDropDown() {
   // store entire element in eventDD as a handle
   let eventDD = document.getElementById("eventDropDown");
@@ -76,7 +77,7 @@ function buildDropDown() {
   const template = document.getElementById("cityDD-template");
 
   // copy events object array into curEvents
-  let curEvents = events;
+  let curEvents = getEventData();
 
   // filter curEvents by cities using map() with arrow function
   //    citiesOnly = curEvents mapped with arrow function to just 'city'
@@ -136,12 +137,13 @@ function buildDropDown() {
 
   eventDD.appendChild(ddul);
   displayStats(curEvents);
+  displayEventData();
 }
 
 function getEvents(element) {
   let city = element.getAttribute("data-string");
 
-  let curEvents = events;
+  let curEvents = getEventData();
 
   let statsHeader = document.getElementById("statsHeader");
   statsHeader.innerHTML = `Stats for ${city} Events`;
@@ -220,4 +222,44 @@ function leastAttendance(events) {
     }
   }
   return least;
+}
+
+// retrieves data from local storage
+function getEventData() {
+  // pull in eventData
+  let curEvents = JSON.parse(localStorage.getItem("eventData"));
+  if (curEvents == null) {
+    curEvents = events;
+    // set eventData if results is null
+    localStorage.setItem("eventData", JSON.stringify(curEvents));
+  }
+  return curEvents;
+}
+
+// displays event data in eventData-template
+function displayEventData() {
+  // get template and store in variable
+  const template = document.getElementById("eventData-template");
+  // get location template will be written
+  const eventBody = document.getElementById("eventData");
+  // clear template before writing
+  eventBody.innerHTML = "";
+
+  // pull in local storage eventData
+  let curEvents = getEventData();
+  let length = curEvents.length;
+  for (let i = 0; i < length; i++) {
+    const eventRow = document.importNode(template.content, true);
+    // querySelector gets first element, querySelectorAll gets all elements
+    const eventCols = eventRow.querySelectorAll("td");
+    eventCols[0].textContent = curEvents[i].event;
+    eventCols[1].textContent = curEvents[i].city;
+    eventCols[2].textContent = curEvents[i].state;
+    eventCols[3].textContent = curEvents[i].attendance;
+    // format date before assigning to eventCols[4]
+    let eventDate = new Date(curEvents[i].date).toLocaleDateString();
+    eventCols[4].textContent = eventDate;
+
+    eventBody.appendChild(eventRow);
+  }
 }

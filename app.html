@@ -100,7 +100,7 @@
               <!-- Template for events -->
             </div>
           </div>
-          <table class="table table-striped">
+          <table class="table table-striped mt-2">
             <tr>
               <th id="statsHeader" colspan="2">Stats For All Events</th>
             </tr>
@@ -122,10 +122,29 @@
             </tr>
           </table>
         </div>
-        <div class="col-6"></div>
+        <div class="col-6"><img src="/img/EB_Logo.png"</div>
       </div>
-      <div class="row">
-        <div class="col-12"></div>
+      <div class="row border-top border-2">
+        <div class="col-12 mt-2">
+          <button class="btn btn-primary btn-lg">ADD EVENT</button>
+          <!-- make table responsive for mobile -->
+          <div class="table-responsive mt-2">
+            <table class="table table-striped">
+              <thead class="table-primary">
+                <tr>
+                  <th>Event Name</th>
+                  <th>City</th>
+                  <th>State</th>
+                  <th>Attendance</th>
+                  <th>Event Date</th>
+                </tr>
+              </thead>
+              <tbody id="eventData">
+                <!-- template data inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -149,9 +168,18 @@
     </footer>
 
     <!-- Page Templates -->
+
     <template id="cityDD-template">
-      <!-- -->
       <li><a class="dropdown-item" onclick="getEvents(this)"></a></li>
+    </template>
+    <template id="eventData-template">
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
     </template>
 
     <!-- End Page Templates -->
