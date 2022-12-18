@@ -57,7 +57,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-end">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="index.html"
+                <a class="nav-link" aria-current="page" href="index.html"
                   >Home</a
                 >
               </li>
@@ -65,16 +65,24 @@
                 <a class="nav-link" href="/app.html">The App</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/code.html">The Code</a>
+                <a class="nav-link active" href="/code.html">The Code</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">The Repo</a>
+                <a
+                  class="nav-link"
+                  href="https://github.com/frotzen/EventManager"
+                  >The Repo</a
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="">About</a>
+                <a class="nav-link" href="https://elwinbeall.netlify.app/#about"
+                  >About</a
+                >
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Blog</a>
+                <a class="nav-link" href="https://elwinbeall.netlify.app/#blog"
+                  >Blog</a
+                >
               </li>
             </ul>
           </div>
@@ -88,22 +96,305 @@
         <!-- Code Editor -->
         <div class="col-12 col-lg-8">
           <pre class="line-numbers">
-                <code class="language-js">
-                    function displayMessage() {
+            <code class="language-js">
+              
+              function buildDropDown() {
+                // store element in eventDD and clear it
+                let eventDD = document.getElementById("eventDropDown");
+                eventDD.innerHTML = "";
+              
+                // get template
+                const template = document.getElementById("cityDD-template");
+              
+                // copy events object array into curEvents and filter by city,
+                // then use Set() to get unique set of cities
+                let curEvents = getEventData();
+                let citiesOnly = curEvents.map((event) => event.city);
+                let distinctEvents = [...new Set(citiesOnly)];
+              
+                // A concise way of doing the same thing:
+                // let distinctEvents = [...new Set(curEvents.map((event) =>
+                //      event.city))];
 
-                        let myMessage = document.getElementById("message").value;
-                        alert(myMessage);
 
-                      }                      
-                </code>
-            </pre>
+                // create an unordered list element in a variable and add a class
+                let ddul = document.createElement("ul");
+                ddul.classList.add("dropdown-menu");
+                              
+                // get all list items from the template and get the a-tags
+                let ddItemNodeAll = document.importNode(template.content, true);
+                let cityName = "All";              
+                let ddItemAll = ddItemNodeAll.querySelector("a");
+              
+                // set the innerHTML (textContent) to a city
+                //  and add to ul-tag
+                // note: could also use ddItem.innerHTML = cityName;
+                ddItemAll.textContent = cityName;
+                ddItemAll.setAttribute("data-string", cityName);
+                ddul.appendChild(ddItemNodeAll);
+                
+                for (let i = 0; i < distinctEvents.length; i++) {
+                  // get li-tags from the template
+                  let ddItemNode = document.importNode(template.content, true);              
+                  let cityName = distinctEvents[i];
+              
+                  // this pulls the a-tag out of ddItemNode
+                  let ddItem = ddItemNode.querySelector("a");
+              
+                  // set the innerHTML or textContent to a city
+                  // note: could use ddItem.innerHTML = cityName;                  
+                  ddItem.textContent = cityName;
+                  ddItem.setAttribute("data-string", cityName);
+              
+                  //add item to ul-tag
+                  ddul.appendChild(ddItemNode);
+                }
+              
+                eventDD.appendChild(ddul);
+                displayStats(curEvents);
+                displayEventData();
+              }                    
+            </code>
+          </pre>
         </div>
         <!-- Code Docs -->
         <div class="col-12 col-lg-4">
-          <p>The code is structured in one function</p>
-          <h5>displayMessage</h5>
-          <p>Prints out the message</p>
+          <p>
+            The code is structured in multiple functions. Comments detail
+            functionality in the code.
+          </p>
+          <h5>buildDropDown</h5>
+          <p>
+            Gets eventDropDown element and rebuilds it by using Set() so cities
+            aren't duplicated in drop down list.
+          </p>
         </div>
+        <p></p>
+        <p></p>
+        <hr />
+        <!-- Code Editor -->
+        <div class="col-12 col-lg-8">
+          <pre class="line-numbers">
+            <code class="language-js">
+              function getEvents(element) {
+                let city = element.getAttribute("data-string");              
+                let curEvents = getEventData();              
+                let statsHeader = document.getElementById("statsHeader");
+                statsHeader.innerHTML = `Stats for ${city} Events`;
+              
+                //display stats for all, or the selected city
+                let filteredEvents = curEvents;
+                if (city != "All") {
+                  // filter array by city name
+                  filteredEvents = curEvents.filter(function (item) {
+                    if (item.city == city) {
+                      return item;
+                    }
+                  });
+                }
+              
+                displayStats(filteredEvents);
+              }
+            </code>
+          </pre>
+        </div>
+        <!-- Code Docs -->
+        <div class="col-12 col-lg-4">
+          <h5>getEvents</h5>
+          <p>
+            Gets event data and filters by city if needed and calls displayStats
+            to display stats of filtered events.
+          </p>
+        </div>
+        <p></p>
+        <p></p>
+        <hr />
+        <!-- Code Editor -->
+        <div class="col-12 col-lg-8">
+          <pre class="line-numbers">
+            <code class="language-js">
+              function displayStats(events) {
+                let total = 0;
+                let most = 0;
+                let least = -1;
+              
+                total = totalAttendance(events);
+                document.getElementById("total").innerHTML = total.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                });
+              
+                document.getElementById("average").innerHTML = (
+                  total / events.length
+                ).toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                });
+              
+                most = mostAttendance(events);
+                document.getElementById("most").innerHTML = most.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                });
+              
+                least = leastAttendance(events);
+                document.getElementById("least").innerHTML = least.toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                });
+              }
+            </code>
+          </pre>
+        </div>
+        <!-- Code Docs -->
+        <div class="col-12 col-lg-4">
+          <h5>displayStats</h5>
+          <p>
+            Sets up three variables for storing data returned from helper
+            functions. Stores information in each referenced element.
+          </p>
+        </div>
+        <p></p>
+        <p></p>
+        <hr />
+        <!-- Code Editor -->
+        <div class="col-12 col-lg-8">
+          <pre class="line-numbers">
+            <code class="language-js">
+              function totalAttendance(events) {
+                let length = events.length;
+                let totalAttendance = 0;
+                for (let i = 0; i < length; i++) {
+                  totalAttendance += events[i].attendance;
+                }
+                return totalAttendance;
+              }
+              
+              function mostAttendance(events) {
+                let length = events.length;
+                let most = 0;
+                for (let i = 0; i < length; i++) {
+                  if (events[i].attendance > most) {
+                    most = events[i].attendance;
+                  }
+                }
+                return most;
+              }
+              
+              function leastAttendance(events) {
+                let length = events.length;
+                let least = events[0].attendance;
+                for (let i = 0; i < length; i++) {
+                  if (events[i].attendance < least) {
+                    least = events[i].attendance;
+                  }
+                }
+                return least;
+              }
+            </code>
+          </pre>
+        </div>
+        <!-- Code Docs -->
+        <div class="col-12 col-lg-4">
+          <h5>totalAttendance, mostAttendance, and leastAttendance</h5>
+          <p>The attendance functions simply find stats data for attendance.</p>
+        </div>
+        <p></p>
+        <p></p>
+        <hr />
+        <!-- Code Editor -->
+        <div class="col-12 col-lg-8">
+          <pre class="line-numbers">
+            <code class="language-js">
+              function getEventData() {
+                // pull in eventData
+                let curEvents = JSON.parse(localStorage.getItem("eventData"));
+                if (curEvents == null) {
+                  curEvents = events;
+                  // set eventData if results is null
+                  localStorage.setItem("eventData", JSON.stringify(curEvents));
+                }
+                return curEvents;
+              }
+              
+              // displays event data in eventData-template
+              function displayEventData() {
+                // get template and store in variable
+                const template = document.getElementById("eventData-template");
+                // get location template will be written
+                const eventBody = document.getElementById("eventData");
+                // clear template before writing
+                eventBody.innerHTML = "";
+              
+                // pull in local storage eventData
+                let curEvents = getEventData();
+                let length = curEvents.length;
+                for (let i = 0; i < length; i++) {
+                  const eventRow = document.importNode(template.content, true);
+                  // querySelector gets first element, querySelectorAll gets all elements
+                  const eventCols = eventRow.querySelectorAll("td");
+                  eventCols[0].textContent = curEvents[i].event;
+                  eventCols[1].textContent = curEvents[i].city;
+                  eventCols[2].textContent = curEvents[i].state;
+                  eventCols[3].textContent = curEvents[i].attendance;
+                  // format date before assigning to eventCols[4]
+                  let eventDate = new Date(curEvents[i].date).toLocaleDateString();
+                  eventCols[4].textContent = eventDate;
+              
+                  eventBody.appendChild(eventRow);
+                }
+              }
+              
+              // saves event data to local storage
+              function saveEventData() {
+                let curEvents = getEventData();
+                /* Object Example
+                {
+                  event: "ComicCon",
+                  city: "New York",
+                  state: "New York",
+                  attendance: 240000,
+                  date: "06/01/2017",
+                },
+                */
+                let newEventObj = {};
+                newEventObj["event"] = document.getElementById("newEventName").value;
+                newEventObj["city"] = document.getElementById("newEventCity").value;
+                // for state
+                let stateSel = document.getElementById("newEventState");
+                newEventObj["state"] = stateSel.options[stateSel.selectedIndex].text;
+              
+                newEventObj["attendance"] = parseInt(
+                  document.getElementById("newEventAttendance").value,
+                  10
+                );
+              
+                // for date
+                let eventDate = document.getElementById("newEventDate").value;
+                let eventDate2 = `${eventDate} 00:00`;
+                newEventObj["date"] = new Date(eventDate2).toLocaleDateString();
+              
+                curEvents.push(newEventObj);
+              
+                // store curEvents to eventData local storage
+                localStorage.setItem("eventData", JSON.stringify(curEvents));
+                buildDropDown();
+              }
+            </code>
+          </pre>
+        </div>
+        <!-- Code Docs -->
+        <div class="col-12 col-lg-4">
+          <h5>getEventData, displayEventData, and saveEventData</h5>
+          <p>
+            Finally, the event data functions make use of local storage to get
+            and save information about the events. Again, the code is commented
+            for clarity.
+          </p>
+        </div>
+        <p></p>
+        <p></p>
+        <hr />
       </div>
     </main>
 
@@ -118,9 +409,15 @@
             <img src="/img/EB_LogoWhite.png" height="24" />
           </div>
           <div class="col text-center text-lg-end">
-            <a href="#"><i class="bi bi-linkedin socialIcons"></i></a>
-            <a href="#"><i class="bi bi-twitter socialIcons"></i></a>
-            <a href="#"><i class="bi bi-github socialIcons"></i></a>
+            <a href="https://www.linkedin.com/in/elwin-beall/"
+              ><i class="bi bi-linkedin socialIcons"></i
+            ></a>
+            <a href="https://twitter.com/frotzen"
+              ><i class="bi bi-twitter socialIcons"></i
+            ></a>
+            <a href="https://github.com/frotzen"
+              ><i class="bi bi-github socialIcons"></i
+            ></a>
           </div>
         </div>
       </div>
